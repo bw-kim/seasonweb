@@ -1,347 +1,488 @@
-<!DOCTYPE html>
-<html lang="ko">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>THE PRIVATE | 프리미엄 맞춤형 PT & 필라테스</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --brand-color: #064e3b; /* Emerald 900 */
-            --accent-color: #d4d4d8; /* Zinc 300 */
-        }
-        body {
-            font-family: 'Noto Sans KR', sans-serif;
-            scroll-behavior: smooth;
-        }
-        .serif {
-            font-family: 'Playfair Display', serif;
-        }
-        .hero-bg {
-            background: linear-gradient(to right, rgba(0,0,0,0.8) 30%, transparent 100%), 
-                        url('https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80');
-            background-size: cover;
-            background-position: center;
-        }
-        .hover-lift {
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-        .hover-lift:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-        }
-        .section-title::after {
-            content: '';
-            display: block;
-            width: 50px;
-            height: 2px;
-            background: var(--brand-color);
-            margin-top: 1rem;
-        }
-    </style>
-</head>
-<body class="bg-white text-stone-900">
+import React, { useState, useMemo, useRef, useEffect } from 'react';
+import { ChevronLeft, ChevronRight, Calendar, ClipboardList, Instagram, CheckCircle2, Clock, Share2, Bell, X } from 'lucide-react';
 
-    <!-- Header -->
-    <header class="fixed w-full z-50 bg-white/90 backdrop-blur-md border-b border-stone-100">
-        <div class="max-w-7xl mx-auto px-8 h-20 flex justify-between items-center">
-            <div class="flex items-center gap-12">
-                <a href="#" class="text-2xl font-bold tracking-widest serif text-emerald-900">THE PRIVATE</a>
-                <nav class="hidden lg:flex gap-8 font-medium text-sm text-stone-600">
-                    <a href="#philosophy" class="hover:text-emerald-800 transition">PHILOSOPHY</a>
-                    <a href="#matching" class="hover:text-emerald-800 transition">MATCHING</a>
-                    <a href="#instructors" class="hover:text-emerald-800 transition">INSTRUCTORS</a>
-                    <a href="#facility" class="hover:text-emerald-800 transition">FACILITY</a>
-                </nav>
-            </div>
-            <div class="flex items-center gap-6">
-                <a href="#" class="text-sm font-semibold border-b-2 border-stone-900 pb-1">CONTACT</a>
-                <button class="bg-emerald-900 text-white px-6 py-3 text-sm font-bold tracking-tighter hover:bg-emerald-800 transition">
-                    CONSULTATION
-                </button>
-            </div>
-        </div>
-    </header>
+// --- 외부 컴포넌트 분리 (한글 입력 버그 해결 및 가독성) ---
 
-    <!-- Hero Section -->
-    <section class="relative h-screen flex items-center overflow-hidden">
-        <div class="absolute inset-0 hero-bg"></div>
-        <div class="relative max-w-7xl mx-auto px-8 w-full">
-            <div class="max-w-2xl text-white">
-                <p class="text-emerald-400 font-bold tracking-[0.3em] mb-4 text-sm animate-pulse">PREMIUM CUSTOMIZED PT</p>
-                <h1 class="text-7xl font-bold leading-[1.1] mb-8 serif">
-                    오직 당신에게만<br>맞춰진 건강한 정렬
-                </h1>
-                <p class="text-xl text-stone-300 mb-10 leading-relaxed font-light">
-                    공장형 PT가 아닌, 데이터 기반의 정밀 분석과 맞춤형 매칭으로<br>
-                    당신의 라이프스타일에 가장 완벽한 시퀀스를 제안합니다.
-                </p>
-                <div class="flex gap-4">
-                    <button class="bg-emerald-700 hover:bg-emerald-600 text-white px-10 py-5 text-lg font-bold transition">
-                        나만의 강사 찾기 →
-                    </button>
-                    <button class="border border-white/30 hover:bg-white/10 text-white px-10 py-5 text-lg font-bold backdrop-blur-sm transition">
-                        스튜디오 둘러보기
-                    </button>
-                </div>
-            </div>
-        </div>
-        <div class="absolute bottom-12 right-12 flex gap-8">
-            <div class="text-white border-l border-emerald-500 pl-6">
-                <p class="text-3xl font-bold serif">240+</p>
-                <p class="text-xs text-stone-400 uppercase tracking-widest">Active Members</p>
-            </div>
-            <div class="text-white border-l border-emerald-500 pl-6">
-                <p class="text-3xl font-bold serif">12</p>
-                <p class="text-xs text-stone-400 uppercase tracking-widest">Specialists</p>
-            </div>
-        </div>
-    </section>
+const HomeView = ({ setView, onShare }) => (
+  <div className="animate-in fade-in duration-500">
+    <nav className="fixed top-0 w-full max-w-[480px] z-50 bg-white/70 backdrop-blur-xl px-6 py-4 flex justify-between items-center border-b border-gray-50">
+      <span className="text-xl font-black tracking-tighter uppercase italic text-lime-600 text-left">woolim pt</span>
+      <div className="flex gap-2 text-right">
+        <button 
+          onClick={onShare}
+          className="p-2 bg-gray-50 rounded-full text-gray-400 hover:text-lime-600 transition-colors"
+        >
+          <Share2 size={18}/>
+        </button>
+        <button className="p-2 bg-gray-50 rounded-full text-gray-400">
+          <Bell size={18}/>
+        </button>
+      </div>
+    </nav>
 
-    <!-- Philosophy -->
-    <section id="philosophy" class="py-32 bg-stone-50">
-        <div class="max-w-7xl mx-auto px-8">
-            <div class="grid lg:grid-cols-2 gap-24 items-center">
-                <div>
-                    <h2 class="text-4xl font-bold mb-8 serif section-title">왜 'THE PRIVATE' 인가요?</h2>
-                    <p class="text-lg text-stone-600 leading-relaxed mb-12">
-                        우리는 단순히 동작을 가르치지 않습니다. 당신의 호흡, 근육의 불균형, 생활 습관까지 분석하여 가장 효율적인 변화를 만들어냅니다. 과학적인 접근과 진심 어린 케어가 만나는 곳, 여기가 당신의 마지막 센터입니다.
-                    </p>
-                    <div class="grid grid-cols-2 gap-8">
-                        <div>
-                            <div class="w-12 h-12 bg-white flex items-center justify-center rounded-xl shadow-sm mb-4">
-                                <svg class="w-6 h-6 text-emerald-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
-                            </div>
-                            <h4 class="font-bold mb-2">정밀 체형 분석</h4>
-                            <p class="text-sm text-stone-500">3D 스캔 및 모션 캡쳐 기반 분석</p>
-                        </div>
-                        <div>
-                            <div class="w-12 h-12 bg-white flex items-center justify-center rounded-xl shadow-sm mb-4">
-                                <svg class="w-6 h-6 text-emerald-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
-                            </div>
-                            <h4 class="font-bold mb-2">강사 매칭 시스템</h4>
-                            <p class="text-sm text-stone-500">목적별 최적의 전문 강사 배정</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="relative">
-                    <img src="https://images.unsplash.com/photo-1518611012118-296072bb5602?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80" alt="Training" class="rounded-2xl shadow-2xl">
-                    <div class="absolute -bottom-8 -left-8 bg-white p-8 rounded-2xl shadow-xl max-w-xs">
-                        <p class="italic text-stone-600 mb-4 font-light">"이곳에서의 시작은 내 삶의 가장 큰 터닝포인트였습니다. 통증이 사라진 일상은 너무나 달랐어요."</p>
-                        <p class="font-bold text-sm text-emerald-900">— 회원 정OO님</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
+    <div className="relative w-full h-[480px]">
+      <img src="https://images.unsplash.com/photo-1540497077202-7c8a3999166f?auto=format&fit=crop&q=80&w=800" 
+           className="w-full h-full object-cover" style={{ maskImage: 'linear-gradient(to bottom, black 85%, transparent)' }} alt="Hero" />
+      <div className="absolute bottom-16 left-0 w-full text-center px-6">
+        <span className="bg-gray-900 text-white text-[10px] font-bold px-2 py-0.5 rounded-full mb-3 inline-block tracking-widest uppercase text-center">Premium PT Studio</span>
+        <h1 className="text-4xl font-black tracking-tight leading-none mb-2 text-gray-900 uppercase italic text-center">woolim pt</h1>
+        <p className="text-sm font-semibold text-gray-600 text-center">몸과 마음이 울리는 건강한 변화</p>
+      </div>
+    </div>
 
-    <!-- Matching Steps -->
-    <section id="matching" class="py-32 bg-white">
-        <div class="max-w-7xl mx-auto px-8 text-center mb-20">
-            <h2 class="text-5xl font-bold mb-6 serif">AI 스마트 매칭 서비스</h2>
-            <p class="text-stone-500 max-w-2xl mx-auto text-lg">복잡한 고민 없이, 설문만으로 당신에게 가장 완벽한 선생님을 찾아드립니다.</p>
-        </div>
-        <div class="max-w-7xl mx-auto px-8 grid lg:grid-cols-3 gap-12">
-            <!-- Step 1 -->
-            <div class="p-10 bg-stone-50 rounded-[40px] text-center hover-lift">
-                <span class="inline-block px-4 py-1 bg-emerald-100 text-emerald-700 rounded-full text-xs font-bold mb-6 uppercase tracking-widest">Step 01</span>
-                <h4 class="text-2xl font-bold mb-4">맞춤 설문 조사</h4>
-                <p class="text-stone-500 mb-8 leading-relaxed text-sm">운동 목적, 선호하는 티칭 스타일, 현재 컨디션을 1분 만에 체크하세요.</p>
-                <div class="w-full h-1 bg-emerald-200 rounded-full overflow-hidden">
-                    <div class="w-1/3 h-full bg-emerald-600"></div>
-                </div>
-            </div>
-            <!-- Step 2 -->
-            <div class="p-10 bg-stone-50 rounded-[40px] text-center hover-lift">
-                <span class="inline-block px-4 py-1 bg-emerald-100 text-emerald-700 rounded-full text-xs font-bold mb-6 uppercase tracking-widest">Step 02</span>
-                <h4 class="text-2xl font-bold mb-4">최적 강사 추천</h4>
-                <p class="text-stone-500 mb-8 leading-relaxed text-sm">데이터를 분석하여 재활, 다이어트 등 분야별 1~4명의 강사를 추천합니다.</p>
-                <div class="w-full h-1 bg-emerald-200 rounded-full overflow-hidden">
-                    <div class="w-2/3 h-full bg-emerald-600"></div>
-                </div>
-            </div>
-            <!-- Step 3 -->
-            <div class="p-10 bg-emerald-900 text-white rounded-[40px] text-center hover-lift">
-                <span class="inline-block px-4 py-1 bg-emerald-700 text-emerald-100 rounded-full text-xs font-bold mb-6 uppercase tracking-widest">Step 03</span>
-                <h4 class="text-2xl font-bold mb-4">상담 및 예약</h4>
-                <p class="text-emerald-200 mb-8 leading-relaxed text-sm">추천 강사의 스케줄을 실시간 확인하고 첫 무료 상담을 예약하세요.</p>
-                <div class="w-full h-1 bg-emerald-700 rounded-full overflow-hidden">
-                    <div class="w-full h-full bg-white"></div>
-                </div>
-            </div>
-        </div>
-    </section>
+    <div className="px-5 pb-32 space-y-8">
+      <div className="text-center space-y-3 pt-4">
+        <h2 className="text-2xl font-black text-gray-900 leading-tight text-center text-left">전문 강사진의 <span className="text-lime-500">1:1 밀착 코칭</span></h2>
+        <p className="text-sm text-gray-400 font-medium leading-relaxed text-center">광주 동구 운림동 유일의 프리미엄 PT샵<br/>체계적인 데이터 분석 개인별 맞춤 프로그램</p>
+      </div>
 
-    <!-- Instructors -->
-    <section id="instructors" class="py-32 bg-stone-50">
-        <div class="max-w-7xl mx-auto px-8 mb-20 flex justify-between items-end">
-            <div>
-                <h2 class="text-4xl font-bold serif section-title uppercase">Specialists</h2>
-                <p class="text-stone-500 mt-4">검증된 전문성과 따뜻한 진심을 가진 최고의 강사진입니다.</p>
-            </div>
-            <a href="#" class="text-stone-900 font-bold border-b-2 border-emerald-900 pb-1 hover:text-emerald-800 transition">View All Instructors</a>
+      <div className="space-y-3">
+        <div className="flex items-center gap-2 px-1">
+          <Instagram size={18} className="text-pink-500" />
+          <h3 className="text-sm font-bold text-gray-300 uppercase tracking-widest text-left">Woolim Lifestyle</h3>
         </div>
-        <div class="max-w-7xl mx-auto px-8 grid lg:grid-cols-4 gap-8">
-            <!-- Card 1 -->
-            <div class="group cursor-pointer">
-                <div class="relative overflow-hidden rounded-3xl mb-6 aspect-[4/5]">
-                    <img src="https://images.unsplash.com/photo-1544126592-807daa215a75?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80" alt="Instructor 1" class="w-full h-full object-cover transition duration-700 group-hover:scale-110">
-                    <div class="absolute inset-0 bg-gradient-to-t from-emerald-900/80 to-transparent opacity-0 group-hover:opacity-100 transition duration-500 flex items-end p-8">
-                        <button class="w-full bg-white text-emerald-900 py-3 rounded-xl font-bold">Profile View</button>
-                    </div>
-                </div>
-                <h4 class="text-xl font-bold mb-1">이아름 <span class="text-sm font-normal text-stone-400 ml-2">Senior Instructor</span></h4>
-                <p class="text-sm text-emerald-700 font-medium">Rehabilitation & Pain Care</p>
-            </div>
-            <!-- Card 2 -->
-            <div class="group cursor-pointer">
-                <div class="relative overflow-hidden rounded-3xl mb-6 aspect-[4/5]">
-                    <img src="https://images.unsplash.com/photo-1594381898411-846e7d193883?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80" alt="Instructor 2" class="w-full h-full object-cover transition duration-700 group-hover:scale-110">
-                    <div class="absolute inset-0 bg-gradient-to-t from-emerald-900/80 to-transparent opacity-0 group-hover:opacity-100 transition duration-500 flex items-end p-8">
-                        <button class="w-full bg-white text-emerald-900 py-3 rounded-xl font-bold">Profile View</button>
-                    </div>
-                </div>
-                <h4 class="text-xl font-bold mb-1">박지수 <span class="text-sm font-normal text-stone-400 ml-2">Pro Instructor</span></h4>
-                <p class="text-sm text-emerald-700 font-medium">Diet & Body Shaping</p>
-            </div>
-            <!-- Card 3 -->
-            <div class="group cursor-pointer">
-                <div class="relative overflow-hidden rounded-3xl mb-6 aspect-[4/5]">
-                    <img src="https://images.unsplash.com/photo-1518310383802-640c2de311b2?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80" alt="Instructor 3" class="w-full h-full object-cover transition duration-700 group-hover:scale-110">
-                    <div class="absolute inset-0 bg-gradient-to-t from-emerald-900/80 to-transparent opacity-0 group-hover:opacity-100 transition duration-500 flex items-end p-8">
-                        <button class="w-full bg-white text-emerald-900 py-3 rounded-xl font-bold">Profile View</button>
-                    </div>
-                </div>
-                <h4 class="text-xl font-bold mb-1">최민호 <span class="text-sm font-normal text-stone-400 ml-2">Lead Instructor</span></h4>
-                <p class="text-sm text-emerald-700 font-medium">Athletic Performance</p>
-            </div>
-            <!-- Card 4 -->
-            <div class="group cursor-pointer">
-                <div class="relative overflow-hidden rounded-3xl mb-6 aspect-[4/5]">
-                    <img src="https://images.unsplash.com/photo-1552196563-55cd4e45efb3?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80" alt="Instructor 4" class="w-full h-full object-cover transition duration-700 group-hover:scale-110">
-                    <div class="absolute inset-0 bg-gradient-to-t from-emerald-900/80 to-transparent opacity-0 group-hover:opacity-100 transition duration-500 flex items-end p-8">
-                        <button class="w-full bg-white text-emerald-900 py-3 rounded-xl font-bold">Profile View</button>
-                    </div>
-                </div>
-                <h4 class="text-xl font-bold mb-1">한유진 <span class="text-sm font-normal text-stone-400 ml-2">Yoga Specialist</span></h4>
-                <p class="text-sm text-emerald-700 font-medium">Flexibility & Meditation</p>
-            </div>
+        <div className="w-full rounded-[32px] overflow-hidden shadow-2xl bg-black relative" style={{ paddingTop: '177.77%' }}>
+          <iframe 
+            className="absolute top-0 left-0 w-full h-full border-0" 
+            src="https://www.instagram.com/reel/DRzFAbTD4KK/embed" 
+            scrolling="no" 
+            allowtransparency="true"
+          ></iframe>
         </div>
-    </section>
+      </div>
 
-    <!-- Facility Gallery -->
-    <section id="facility" class="py-32 bg-white">
-        <div class="max-w-7xl mx-auto px-8">
-            <div class="flex flex-col lg:flex-row gap-4 h-[600px]">
-                <div class="lg:w-1/2 relative group overflow-hidden rounded-3xl">
-                    <img src="https://images.unsplash.com/photo-1518459031867-a89b944bffe4?ixlib=rb-1.2.1&auto=format&fit=crop&w=1200&q=80" class="w-full h-full object-cover group-hover:scale-105 transition duration-1000">
-                    <div class="absolute inset-0 bg-black/20 group-hover:bg-transparent transition duration-500"></div>
-                </div>
-                <div class="lg:w-1/2 flex flex-col gap-4">
-                    <div class="h-1/2 flex gap-4">
-                        <div class="w-1/2 relative group overflow-hidden rounded-3xl">
-                            <img src="https://images.unsplash.com/photo-1574680096145-d05b474e2155?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" class="w-full h-full object-cover group-hover:scale-105 transition duration-1000">
-                        </div>
-                        <div class="w-1/2 relative group overflow-hidden rounded-3xl">
-                            <img src="https://images.unsplash.com/photo-1554284126-aa88f22d8b74?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" class="w-full h-full object-cover group-hover:scale-105 transition duration-1000">
-                        </div>
-                    </div>
-                    <div class="h-1/2 bg-stone-900 rounded-3xl flex items-center justify-center p-12 text-center">
-                        <div>
-                            <h3 class="text-3xl font-bold text-white mb-4 serif">Private Space</h3>
-                            <p class="text-stone-400 text-sm leading-relaxed">최고급 기구와 쾌적한 개별 샤워실,<br>집중력을 높여주는 프라이빗한 공간을 제공합니다.</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
+      <button 
+        onClick={() => setView('survey')}
+        className="w-full bg-white border-2 border-lime-100 rounded-[32px] p-6 shadow-sm hover:shadow-md transition-all flex items-center justify-between group"
+      >
+        <div className="flex items-center gap-4 text-left">
+          <div className="w-12 h-12 rounded-2xl bg-lime-100 flex items-center justify-center text-lime-600"><ClipboardList size={24} /></div>
+          <div>
+            <h3 className="font-bold text-lg text-gray-900 text-left">무료 체형 상담 신청</h3>
+            <p className="text-xs text-gray-400 mt-0.5 text-left text-left">인바디 측정 및 1:1 상담 예약</p>
+          </div>
         </div>
-    </section>
+        <ChevronRight className="text-gray-300 group-hover:translate-x-1 transition-transform" />
+      </button>
 
-    <!-- Final CTA -->
-    <section class="py-32 bg-emerald-950 relative overflow-hidden">
-        <div class="absolute top-0 right-0 w-1/2 h-full bg-white/5 skew-x-12 transform translate-x-1/2"></div>
-        <div class="max-w-7xl mx-auto px-8 relative z-10">
-            <div class="grid lg:grid-cols-2 gap-16 items-center">
-                <div class="text-white">
-                    <h2 class="text-5xl font-bold mb-8 serif leading-tight">지금 바로<br>변화를 시작할 시간입니다.</h2>
-                    <p class="text-xl text-emerald-200/70 mb-12">첫 방문 시 정밀 체형 분석(5만원 상당)을 무료로 제공해 드립니다.</p>
-                    <div class="flex items-center gap-8">
-                        <div class="flex -space-x-4">
-                            <img class="w-12 h-12 rounded-full border-2 border-emerald-950" src="https://randomuser.me/api/portraits/women/1.jpg">
-                            <img class="w-12 h-12 rounded-full border-2 border-emerald-950" src="https://randomuser.me/api/portraits/men/2.jpg">
-                            <img class="w-12 h-12 rounded-full border-2 border-emerald-950" src="https://randomuser.me/api/portraits/women/3.jpg">
-                            <div class="w-12 h-12 rounded-full border-2 border-emerald-950 bg-emerald-700 flex items-center justify-center text-[10px] font-bold">+240</div>
-                        </div>
-                        <p class="text-sm font-medium">이미 240명 이상의 회원님이<br>변화를 경험하고 계십니다.</p>
-                    </div>
-                </div>
-                <div class="bg-white p-12 rounded-[40px] shadow-2xl">
-                    <h3 class="text-2xl font-bold mb-6 text-stone-900">간편 상담 신청</h3>
-                    <form class="space-y-6">
-                        <div class="grid grid-cols-2 gap-4">
-                            <input type="text" placeholder="성함" class="w-full px-5 py-4 bg-stone-50 border border-stone-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-emerald-500">
-                            <input type="tel" placeholder="연락처" class="w-full px-5 py-4 bg-stone-50 border border-stone-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-emerald-500">
-                        </div>
-                        <select class="w-full px-5 py-4 bg-stone-50 border border-stone-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-emerald-500">
-                            <option>관심 분야 선택</option>
-                            <option>통증 케어 & 재활</option>
-                            <option>체형 교정</option>
-                            <option>다이어트</option>
-                            <option>산전/산후</option>
-                        </select>
-                        <button class="w-full bg-emerald-900 text-white py-5 rounded-2xl font-bold text-lg hover:bg-emerald-800 transition">
-                            무료 체형 분석 예약하기
-                        </button>
-                    </form>
-                </div>
+      <FacilitySlider />
+
+      <div className="py-4">
+        <h3 className="text-lg font-black mb-4 px-1 italic uppercase text-gray-900 text-left text-left">Location</h3>
+        <div className="bg-gray-50 rounded-[32px] overflow-hidden border border-gray-100 shadow-sm bg-white">
+          <iframe className="w-full h-[240px]" 
+                  src="https://maps.google.com/maps?q=광주광역시 동구 운림길 29-9&t=&z=17&ie=UTF8&iwloc=&output=embed"
+                  loading="lazy"></iframe>
+          <div className="p-6 flex items-center justify-between gap-4">
+            <div className="flex-1 min-w-0 text-left">
+              <p className="text-base font-bold text-gray-900 text-left">광주 동구 운림길 29-9 2층</p>
+              <p className="text-[11px] text-gray-400 mt-1 font-medium text-left leading-tight text-left">운림동 무등파크맨션2차 정문 앞<br/>(구 집현전 독서실) 2층</p>
             </div>
+            <button className="flex-shrink-0 bg-gray-900 text-white px-5 py-3 rounded-2xl text-xs font-bold shadow-lg shadow-gray-200">
+              길찾기
+            </button>
+          </div>
         </div>
-    </section>
+      </div>
 
-    <!-- Footer -->
-    <footer class="py-20 bg-stone-50 border-t border-stone-200">
-        <div class="max-w-7xl mx-auto px-8 grid lg:grid-cols-4 gap-12">
-            <div class="col-span-1">
-                <h3 class="text-xl font-bold serif tracking-widest text-emerald-900 mb-6">THE PRIVATE</h3>
-                <p class="text-sm text-stone-500 leading-relaxed mb-6">최상의 서비스와 전문성을 바탕으로<br>당신의 건강한 일상을 디자인합니다.</p>
-                <div class="flex gap-4">
-                    <a href="#" class="w-10 h-10 bg-white border border-stone-200 rounded-full flex items-center justify-center text-stone-600 hover:text-emerald-700 transition">Ig</a>
-                    <a href="#" class="w-10 h-10 bg-white border border-stone-200 rounded-full flex items-center justify-center text-stone-600 hover:text-emerald-700 transition">Fb</a>
-                    <a href="#" class="w-10 h-10 bg-white border border-stone-200 rounded-full flex items-center justify-center text-stone-600 hover:text-emerald-700 transition">Ka</a>
-                </div>
-            </div>
-            <div>
-                <h4 class="font-bold mb-6">Quick Links</h4>
-                <ul class="space-y-4 text-sm text-stone-500 font-medium">
-                    <li><a href="#" class="hover:text-emerald-700">Philosophy</a></li>
-                    <li><a href="#" class="hover:text-emerald-700">Programs</a></li>
-                    <li><a href="#" class="hover:text-emerald-700">Instructor Matching</a></li>
-                    <li><a href="#" class="hover:text-emerald-700">Booking System</a></li>
-                </ul>
-            </div>
-            <div>
-                <h4 class="font-bold mb-6">Business</h4>
-                <p class="text-sm text-stone-500 mb-2">대표자: 김대표 | 사업자번호: 123-45-67890</p>
-                <p class="text-sm text-stone-500 mb-2">주소: 서울특별시 강남구 테헤란로 123</p>
-                <p class="text-sm text-stone-500">통신판매업신고: 제 2024-서울강남-1234호</p>
-            </div>
-            <div>
-                <h4 class="font-bold mb-6">Operation</h4>
-                <p class="text-sm text-stone-500 mb-2 font-bold">Weekday: 07:00 - 23:00</p>
-                <p class="text-sm text-stone-500 mb-2 font-bold">Saturday: 10:00 - 18:00</p>
-                <p class="text-sm text-stone-400 italic">Sunday & Holiday Off</p>
-            </div>
+      <div className="text-center py-10">
+        <p className="text-[10px] font-black uppercase tracking-[6px] text-gray-300 text-center text-center text-center">Woolim PT Studio</p>
+        <p className="text-[10px] mt-3 text-gray-300 text-center text-center text-center text-center">© 2024 WOOLIM PT. All rights reserved.</p>
+      </div>
+    </div>
+
+    <div className="fixed bottom-6 left-1/2 -translate-x-1/2 w-full max-w-[440px] px-4 z-50">
+      <button onClick={() => setView('survey')} className="w-full bg-lime-500 text-white py-5 text-center font-black text-lg rounded-3xl shadow-xl shadow-lime-500/30 uppercase italic">
+        Start Consultation
+      </button>
+    </div>
+  </div>
+);
+
+const SurveyView = ({ setView, bookingData, setBookingData, goalOptions, toggleGoal }) => (
+  <div className="p-6 pt-24 animate-in slide-in-from-right duration-300 min-h-screen bg-white text-left">
+    <button onClick={() => setView('home')} className="mb-8 flex items-center text-gray-400 font-bold hover:text-gray-600 transition-colors text-left"><ChevronLeft /> 뒤로가기</button>
+    <div className="space-y-8 text-left">
+      <div className="text-left">
+        <h2 className="text-3xl font-black text-gray-900 mb-2 leading-tight text-left text-left">상담 전 <span className="text-lime-500">필수 정보</span>를<br/>입력해 주세요.</h2>
+        <p className="text-sm text-gray-400 font-medium leading-relaxed text-left text-left">정확한 상담을 위해 필요한 항목입니다.</p>
+      </div>
+
+      <div className="space-y-6 text-left">
+        <div className="space-y-2 text-left">
+          <label className="text-xs font-bold text-gray-400 uppercase ml-1 tracking-widest text-left block">이름</label>
+          <input 
+            type="text" 
+            placeholder="이름을 입력하세요" 
+            value={bookingData.name}
+            className="w-full p-5 rounded-[24px] bg-gray-50 border-2 border-transparent focus:border-lime-500 focus:bg-white transition-all outline-none font-bold text-gray-900 text-left"
+            onChange={(e) => setBookingData(prev => ({ ...prev, name: e.target.value }))}
+          />
         </div>
-        <div class="max-w-7xl mx-auto px-8 mt-20 pt-8 border-t border-stone-200 flex justify-between items-center text-xs text-stone-400">
-            <p>© 2024 THE PRIVATE. All rights reserved.</p>
-            <div class="flex gap-8">
-                <a href="#">Privacy Policy</a>
-                <a href="#">Terms of Service</a>
-            </div>
+        <div className="space-y-2 text-left">
+          <label className="text-xs font-bold text-gray-400 uppercase ml-1 tracking-widest text-left block">연락처</label>
+          <input 
+            type="tel" 
+            placeholder="010-0000-0000" 
+            value={bookingData.phone}
+            className="w-full p-5 rounded-[24px] bg-gray-50 border-2 border-transparent focus:border-lime-500 focus:bg-white transition-all outline-none font-bold text-gray-900 text-left"
+            onChange={(e) => setBookingData(prev => ({ ...prev, phone: e.target.value }))}
+          />
         </div>
-    </footer>
+        <div className="space-y-3 text-left">
+          <label className="text-xs font-bold text-gray-400 uppercase ml-1 tracking-widest text-left block">상담 목적 (중복 선택 가능)</label>
+          <div className="grid grid-cols-2 gap-2 text-center">
+            {goalOptions.map(goal => (
+              <button 
+                key={goal}
+                onClick={() => toggleGoal(goal)}
+                className={`p-4 rounded-[20px] text-sm font-bold transition-all border-2 text-center ${bookingData.goal.includes(goal) ? 'bg-lime-500 text-white border-lime-500 shadow-lg shadow-lime-500/20' : 'bg-gray-50 text-gray-400 border-transparent hover:border-gray-200'}`}
+              >
+                {goal}
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
 
-</body>
-</html>
+      <button 
+        disabled={!bookingData.name || !bookingData.phone || bookingData.goal.length === 0}
+        onClick={() => setView('instructors')} 
+        className="w-full bg-gray-900 text-white py-5 rounded-[24px] font-black text-lg disabled:opacity-10 mt-6 shadow-xl active:scale-[0.98] transition-transform text-center"
+      >
+        다음 단계로
+      </button>
+    </div>
+  </div>
+);
 
+const InstructorView = ({ setView, instructors, bookingData, setBookingData }) => (
+  <div className="p-6 pt-24 animate-in slide-in-from-right duration-300 min-h-screen bg-white text-left">
+    <button onClick={() => setView('survey')} className="mb-8 flex items-center text-gray-400 font-bold text-left"><ChevronLeft /> 뒤로가기</button>
+    <div className="space-y-6 text-left text-left">
+      <div className="text-left">
+        <h2 className="text-3xl font-black text-gray-900 mb-2 leading-tight text-left text-left text-left text-left">함께 하실 <span className="text-lime-500">강사님</span>을<br/>선택해 주세요.</h2>
+        <p className="text-sm text-gray-400 font-medium leading-relaxed text-left text-left text-left text-left">전담 코칭을 통해 확실한 변화를 만들어 드립니다.</p>
+      </div>
+
+      <div className="space-y-3 pb-8 text-left">
+        {instructors.map(ins => (
+          <button 
+            key={ins.id}
+            onClick={() => {
+              setBookingData(prev => ({...prev, instructor: ins}));
+              setView('booking');
+            }}
+            className={`w-full flex items-center gap-4 p-4 rounded-[28px] border-2 transition-all ${bookingData.instructor?.id === ins.id ? 'border-lime-500 bg-lime-50' : 'border-gray-50 bg-white hover:border-gray-200'}`}
+          >
+            <img src={ins.img} className="w-16 h-16 rounded-[20px] object-cover shadow-sm" alt={ins.name} />
+            <div className="text-left">
+              <p className="font-bold text-gray-900 text-lg text-left text-left">{ins.name}</p>
+              <p className="text-xs text-gray-400 font-medium leading-tight text-left text-left text-left text-left">{ins.role}</p>
+            </div>
+            <ChevronRight className="ml-auto text-gray-200 text-right" />
+          </button>
+        ))}
+      </div>
+    </div>
+  </div>
+);
+
+const BookingView = ({ setView, bookingData, setBookingData, timeSlots, days }) => (
+  <div className="p-6 pt-24 animate-in slide-in-from-right duration-300 min-h-screen bg-white text-left">
+    <button onClick={() => setView('instructors')} className="mb-8 flex items-center text-gray-400 font-bold text-left text-left"><ChevronLeft /> 뒤로가기</button>
+    <div className="space-y-6 text-left text-left text-left">
+      <div className="flex items-center justify-between text-left text-left text-left text-left">
+        <div className="text-left">
+          <h2 className="text-2xl font-black text-gray-900 mb-1 leading-tight text-left text-left text-left text-left">상담 날짜와 <span className="text-lime-500">시간</span></h2>
+          <p className="text-xs text-gray-400 font-medium text-left text-left text-left text-left">{bookingData.instructor?.name} 강사님 상담 예약</p>
+        </div>
+        <div className="w-14 h-14 rounded-full overflow-hidden border-2 border-lime-400 shadow-md text-right">
+          <img src={bookingData.instructor?.img} className="w-full h-full object-cover" alt="selected" />
+        </div>
+      </div>
+
+      <div className="bg-gray-50 rounded-[32px] p-6 border border-gray-100 shadow-sm">
+        <div className="flex justify-between items-center mb-6 px-1 text-center">
+           <span className="font-black text-gray-900 text-lg tracking-tighter text-left">2026. 01</span>
+           <div className="flex gap-2 text-center text-center">
+              <button className="p-1.5 bg-white rounded-xl shadow-sm text-gray-300"><ChevronLeft size={18} /></button>
+              <button className="p-1.5 bg-white rounded-xl shadow-sm"><ChevronRight size={18} /></button>
+           </div>
+        </div>
+        <div className="grid grid-cols-7 gap-y-4 text-center">
+          {['일','월','화','수','목','금','토'].map(d => <span key={d} className="text-[10px] font-bold text-gray-300 uppercase text-center text-center">{d}</span>)}
+          {days.map(d => (
+            <button 
+              key={d} 
+              onClick={() => setBookingData(prev => ({...prev, date: d}))}
+              className={`text-sm font-bold w-10 h-10 mx-auto rounded-full flex items-center justify-center transition-all text-center ${bookingData.date === d ? 'bg-lime-500 text-white shadow-lg shadow-lime-500/30 scale-110' : 'text-gray-900 hover:bg-white'}`}
+            >
+              {d}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {bookingData.date && (
+        <div className="space-y-4 animate-in fade-in slide-in-from-bottom duration-500 pt-2 text-left text-left">
+          <h3 className="text-xs font-black text-gray-300 uppercase tracking-widest flex items-center gap-2 px-1 text-left text-left text-left"><Clock size={14}/> Available Slots</h3>
+          <div className="grid grid-cols-4 gap-2 text-center">
+            {timeSlots.map(slot => (
+              <button 
+                key={slot.time}
+                disabled={!slot.available}
+                onClick={() => setBookingData(prev => ({...prev, time: slot.time}))}
+                className={`py-3.5 rounded-[16px] text-xs font-black transition-all text-center text-center ${!slot.available ? 'bg-gray-100 text-gray-200' : (bookingData.time === slot.time ? 'bg-gray-900 text-white shadow-xl' : 'bg-white border border-gray-100 text-gray-900 hover:border-gray-300')}`}
+              >
+                {slot.time}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
+      <button 
+        disabled={!bookingData.date || !bookingData.time}
+        onClick={() => setView('complete')}
+        className="w-full bg-lime-500 text-white py-5 rounded-[24px] font-black text-lg disabled:opacity-10 mt-6 shadow-xl shadow-lime-500/20 active:scale-[0.98] transition-all text-center"
+      >
+        예약 완료
+      </button>
+    </div>
+  </div>
+);
+
+const CompleteView = ({ setView, bookingData, setBookingData }) => (
+  <div className="flex flex-col items-center justify-center min-h-screen p-8 text-center animate-in zoom-in-95 duration-500 bg-white">
+    <div className="w-24 h-24 bg-lime-100 text-lime-600 rounded-[32px] flex items-center justify-center mb-8 shadow-lg shadow-lime-100">
+      <CheckCircle2 size={48} />
+    </div>
+    <h2 className="text-3xl font-black text-gray-900 mb-4 tracking-tight leading-tight text-center text-center">상담 예약이<br/>확정되었습니다!</h2>
+    <div className="space-y-1 text-gray-400 font-medium mb-12 text-center text-center text-center">
+      <p className="text-center text-center"><span className="text-gray-900 font-bold">{bookingData.name}</span>님, 곧 강사님이 연락드릴게요.</p>
+      <p className="text-center text-center text-sm font-medium text-center">기다려 주셔서 감사합니다.</p>
+    </div>
+
+    <div className="w-full bg-gray-50 rounded-[32px] p-8 text-left space-y-5 mb-12 border border-gray-100 text-left text-left text-left">
+      <div className="flex justify-between items-start text-left text-left text-left">
+        <span className="text-xs font-bold text-gray-300 uppercase tracking-widest text-left text-left">일시</span>
+        <span className="text-sm font-bold text-gray-900 text-right text-right">1월 {bookingData.date}일 {bookingData.time}</span>
+      </div>
+      <div className="flex justify-between items-start text-left text-left text-left">
+        <span className="text-xs font-bold text-gray-300 uppercase tracking-widest text-left text-left text-left">강사</span>
+        <span className="text-sm font-bold text-lime-600 text-right text-right">{bookingData.instructor?.name}</span>
+      </div>
+      <div className="flex justify-between items-start text-left text-left text-left">
+        <span className="text-xs font-bold text-gray-300 uppercase tracking-widest text-left text-left text-left">목적</span>
+        <span className="text-sm font-bold text-gray-900 text-right flex-1 ml-4 leading-tight text-right text-right">{bookingData.goal.join(', ')}</span>
+      </div>
+    </div>
+
+    <button onClick={() => {
+      setBookingData({name:'', phone:'', goal:[], instructor:null, date:null, time:null});
+      setView('home');
+    }} className="w-full py-5 bg-gray-900 text-white rounded-[24px] font-black shadow-2xl active:scale-[0.98] transition-transform text-center text-center">
+      메인으로 이동
+    </button>
+  </div>
+);
+
+const FacilitySlider = () => {
+  const scrollRef = useRef(null);
+  const [isDown, setIsDown] = useState(false);
+  const [startX, setStartX] = useState(0);
+  const [scrollLeft, setScrollLeft] = useState(0);
+
+  const handleMouseDown = (e) => {
+    setIsDown(true);
+    setStartX(e.pageX - scrollRef.current.offsetLeft);
+    setScrollLeft(scrollRef.current.scrollLeft);
+  };
+
+  const handleMouseMove = (e) => {
+    if (!isDown) return;
+    e.preventDefault();
+    const x = e.pageX - scrollRef.current.offsetLeft;
+    const walk = (x - startX) * 2;
+    scrollRef.current.scrollLeft = scrollLeft - walk;
+  };
+
+  return (
+    <div className="py-6">
+      <div className="flex justify-between items-end mb-4 px-1 text-left">
+        <h3 className="text-lg font-black italic uppercase text-gray-900 text-left text-left text-left">Gym Facilities</h3>
+        <span className="text-[10px] font-bold text-gray-300 uppercase tracking-widest text-right">Drag to view</span>
+      </div>
+      <div 
+        ref={scrollRef}
+        onMouseDown={handleMouseDown}
+        onMouseLeave={() => setIsDown(false)}
+        onMouseUp={() => setIsDown(false)}
+        onMouseMove={handleMouseMove}
+        className="flex overflow-x-auto gap-4 pb-4 cursor-grab active:cursor-grabbing no-scrollbar"
+        style={{ scrollSnapType: 'x mandatory', scrollbarWidth: 'none' }}
+      >
+        {[
+          { title: 'Personal Training Zone', desc: '1:1 수업 전용 독립 공간', img: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&q=80&w=600' },
+          { title: 'Premium Equipment', desc: '최고급 외산 머신 웨이트 존', img: 'https://images.unsplash.com/photo-1593079831268-3381b0db4a77?auto=format&fit=crop&q=80&w=600' },
+          { title: 'Private Shower Room', desc: '개인별 프라이빗 샤워실', img: 'https://images.unsplash.com/photo-1571902943202-507ec2618e8f?auto=format&fit=crop&q=80&w=600' }
+        ].map((item, idx) => (
+          <div key={idx} className="min-w-[280px] scroll-snap-align-center bg-gray-50 rounded-3xl overflow-hidden border border-gray-100">
+            <img src={item.img} className="w-full h-44 object-cover" alt={item.title} />
+            <div className="p-4 bg-white text-left text-left">
+              <p className="text-sm font-bold text-gray-900 text-left text-left text-left">{item.title}</p>
+              <p className="text-[11px] text-gray-400 mt-1 font-medium text-left text-left text-left">{item.desc}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+// --- 메인 App 컴포넌트 ---
+
+export default function App() {
+  const [view, setView] = useState('home');
+  const [toast, setToast] = useState({ show: false, message: '' });
+  const [bookingData, setBookingData] = useState({
+    name: '',
+    phone: '',
+    goal: [],
+    instructor: null,
+    date: null,
+    time: null
+  });
+
+  const goalOptions = [
+    '다이어트', '체력 증진', '근력 향상', '체형 교정', 
+    '바디프로필', '재활 운동', '산전/산후 관리', '웨딩 케어'
+  ];
+
+  const instructors = [
+    { id: 1, name: 'Jay (제이)', role: '재활 및 체형교정 전문', img: 'https://images.unsplash.com/photo-1567013127542-490d757e51fc?auto=format&fit=crop&q=80&w=200' },
+    { id: 2, name: 'Mina (미나)', role: '바디프로필 및 다이어트', img: 'https://images.unsplash.com/photo-1548690312-e3b507d8df11?auto=format&fit=crop&q=80&w=200' },
+    { id: 3, name: 'Ken (켄)', role: '고강도 근력 및 벌크업', img: 'https://images.unsplash.com/photo-1507398941214-57f516d901ca?auto=format&fit=crop&q=80&w=200' },
+    { id: 4, name: 'Sarah (사라)', role: '여성 맞춤형 라인 코칭', img: 'https://images.unsplash.com/photo-1594381898411-846e7d193883?auto=format&fit=crop&q=80&w=200' },
+    { id: 5, name: 'Rio (리오)', role: '기초 체력 및 유연성 관리', img: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?auto=format&fit=crop&q=80&w=200' },
+  ];
+
+  const timeSlots = [
+    { time: '10:00', available: true },
+    { time: '11:00', available: false },
+    { time: '13:00', available: true },
+    { time: '14:00', available: true },
+    { time: '15:00', available: false },
+    { time: '16:00', available: true },
+    { time: '17:00', available: true },
+    { time: '18:00', available: false },
+    { time: '19:00', available: true },
+    { time: '20:00', available: true },
+  ];
+
+  const days = useMemo(() => Array.from({ length: 31 }, (_, i) => i + 1), []);
+
+  const toggleGoal = (goal) => {
+    setBookingData(prev => {
+      const isSelected = prev.goal.includes(goal);
+      if (isSelected) {
+        return { ...prev, goal: prev.goal.filter(g => g !== goal) };
+      } else {
+        return { ...prev, goal: [...prev.goal, goal] };
+      }
+    });
+  };
+
+  const showToastMessage = (msg) => {
+    setToast({ show: true, message: msg });
+    setTimeout(() => setToast({ show: false, message: '' }), 2500);
+  };
+
+  const handleShare = () => {
+    const url = window.location.href;
+    
+    // Web Share API 시도
+    if (navigator.share) {
+      navigator.share({
+        title: 'WOOLIM PT',
+        text: 'WOOLIM PT 프리미엄 퍼스널 트레이닝 센터',
+        url: url
+      }).catch(() => {
+        copyToClipboard(url);
+      });
+    } else {
+      copyToClipboard(url);
+    }
+  };
+
+  const copyToClipboard = (text) => {
+    const textarea = document.createElement('textarea');
+    textarea.value = text;
+    textarea.style.position = 'fixed';
+    textarea.style.left = '-9999px';
+    textarea.style.top = '0';
+    document.body.appendChild(textarea);
+    textarea.focus();
+    textarea.select();
+    
+    try {
+      document.execCommand('copy');
+      showToastMessage('페이지 주소가 클립보드에 복사되었습니다.');
+    } catch (err) {
+      showToastMessage('주소 복사에 실패했습니다.');
+    }
+    document.body.removeChild(textarea);
+  };
+
+  return (
+    <div className="flex justify-center bg-gray-100 min-h-screen font-sans">
+      <div className="bg-white shadow-2xl overflow-x-hidden relative w-full max-w-[480px]">
+        {view === 'home' && <HomeView setView={setView} onShare={handleShare} />}
+        {view === 'survey' && (
+          <SurveyView 
+            setView={setView} 
+            bookingData={bookingData} 
+            setBookingData={setBookingData} 
+            goalOptions={goalOptions} 
+            toggleGoal={toggleGoal} 
+          />
+        )}
+        {view === 'instructors' && (
+          <InstructorView 
+            setView={setView} 
+            instructors={instructors} 
+            bookingData={bookingData} 
+            setBookingData={setBookingData} 
+          />
+        )}
+        {view === 'booking' && (
+          <BookingView 
+            setView={setView} 
+            bookingData={bookingData} 
+            setBookingData={setBookingData} 
+            timeSlots={timeSlots} 
+            days={days} 
+          />
+        )}
+        {view === 'complete' && (
+          <CompleteView 
+            setView={setView} 
+            bookingData={bookingData} 
+            setBookingData={setBookingData} 
+          />
+        )}
+
+        {/* Toast 알림 메시지 */}
+        {toast.show && (
+          <div className="fixed bottom-32 left-1/2 -translate-x-1/2 z-[100] animate-in slide-in-from-bottom-4 duration-300">
+            <div className="bg-gray-900/90 backdrop-blur text-white px-6 py-3 rounded-full text-xs font-bold shadow-2xl flex items-center gap-2 whitespace-nowrap">
+              <CheckCircle2 size={14} className="text-lime-400" />
+              {toast.message}
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
